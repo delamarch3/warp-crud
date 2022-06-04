@@ -1,0 +1,16 @@
+services:
+  comments:
+    build: .
+    environment:
+      - DB_URI=postgres://postgres:postgres@comments_database/comments
+      - MAX_CONNECTIONS=5
+    ports:
+      - 8000:8000
+  comments_database:
+    build: ./database
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=comments
+    ports:
+      - 5432:5432
