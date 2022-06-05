@@ -28,11 +28,22 @@ fn path_prefix() -> BoxedFilter<()> {
 pub fn api(
     db: DB,
 ) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
-    insert(db.clone())
+    health()
+        .or(insert(db.clone()))
         .or(get_one(db.clone()))
         .or(get_by_postid(db.clone()))
         .or(update(db.clone()))
         .or(delete(db))
+}
+
+fn health(
+) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
+    warp::get().and(path!("health")).and_then(|| async {
+        Ok::<_, warp::Rejection>(warp::reply::with_status(
+            "OK",
+            warp::http::status::StatusCode::OK,
+        ))
+    })
 }
 
 pub fn insert(
@@ -57,7 +68,7 @@ pub fn get_one(
         .and(warp::path::end())
         .and(warp::any().map(move || db.clone()))
         .and(warp::query().map(|q: GetOne| q.id))
-        .and_then(comments_handler::get_one)
+        .and_then(comments_handler::get_one_by_id)
 }
 
 pub fn get_by_postid(

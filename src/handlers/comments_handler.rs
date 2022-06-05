@@ -36,7 +36,7 @@ pub async fn insert(
     Ok(res(None, vec![], StatusCode::OK))
 }
 
-pub async fn get_one(
+pub async fn get_one_by_id(
     db: DB,
     id: i32,
 ) -> Result<impl warp::Reply, warp::Rejection> {
